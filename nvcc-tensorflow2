@@ -1,0 +1,25 @@
+from nvidia/cuda:10.1-cudnn7-devel-centos7
+
+#ENV ROOT_PASSWORD=
+
+# Export CUDA 
+RUN echo "export PATH=/usr/local/cuda-10.1/bin${PATH:+:${PATH}}" >> ~/.bash_profile
+RUN echo "export LD_LIBRARY_PATH=/usr/local/cuda-10.1/lib64${LD_LIBRARY_PATH:+:${LD_LIBRARY_PATH}}" >> ~/.bash_profile
+
+## install tf2
+RUN yum install -y epel-release
+RUN yum install -y python36 python36-setuptools
+RUN easy_install-3.6 pip
+RUN pip install tensorflow==2.0.0-rc0
+
+## sshd
+RUN yum install -y openssh-server openssh-clients
+RUN echo '' >> /etc/ssh/sshd_config
+RUN echo '# Allow root login' >> /etc/ssh/sshd_config
+RUN echo 'PermitRootLogin yes' >> /etc/ssh/sshd_config
+RUN echo '' >> /etc/ssh/sshd_config
+RUN bash -c 'echo -e "$ROOT_PASSWORD\n$ROOT_PASSWORD"' | passwd
+RUN ssh-keygen -f /etc/ssh/ssh_host_rsa_key -N '' -t rsa
+RUN ssh-keygen -f /etc/ssh/ssh_host_ed25519_key -N '' -t ed25519
+CMD ["/usr/sbin/sshd", "-D"]
+EXPOSE 22
