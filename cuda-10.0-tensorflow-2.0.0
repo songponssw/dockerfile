@@ -1,4 +1,4 @@
-from nvidia/cuda:10.1-cudnn7-devel-centos7
+from nvidia/cuda:10.0-cudnn7-devel-centos7
 
 #ENV ROOT_PASSWORD=
 
